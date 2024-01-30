@@ -1,11 +1,21 @@
-CREATE TABLE orders (
-    id SERIAL PRIMARY KEY,
-    price float,
-    date timestamp,
-    user_id int,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-INSERT INTO orders (price,date, user_id) VALUES ( 18, '2021-01-01 00:00:00', 1);
-INSERT INTO orders (price,date, user_id) VALUES ( 18, '2021-01-02 04:00:00', 1);
-INSERT INTO orders (price,date, user_id) VALUES ( 18, '2021-01-03 05:00:00', 2);
-INSERT INTO orders (price,date, user_id) VALUES ( 18, '2021-01-04 06:00:00', 2);
+import pool from "../db/pool.js";
+
+//get orders and order
+export const getOrders = async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM orders");
+    res.status(200).json(rows);
+  } catch (error) {
+    res.status(404).json(error.message);
+  }
+};
+
+export const getOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rows } = await pool.query("SELECT * FROM orders WHERE id=$1", [id]);
+    res.status(200).json(rows[0]);
+  } catch (error) {
+    res.status(404).json(error.message);
+  }
+}
